@@ -1,0 +1,10 @@
+package com.bohrer.budgetapi.repository;
+
+import com.bohrer.budgetapi.domain.User;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+    
+    User findByUsername(String username);
+}
