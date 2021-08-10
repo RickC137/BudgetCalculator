@@ -1,5 +1,7 @@
 package com.bohrer.budgetapi.service;
 
+import java.sql.Date;
+
 import com.bohrer.budgetapi.domain.Account;
 import com.bohrer.budgetapi.domain.User;
 import com.bohrer.budgetapi.repository.AccountRepository;
@@ -14,8 +16,19 @@ public class MyUserDetailsService_Impl implements MyUserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CreateDefaultData createDefaultData;
+
     @Override
     public User findByUsername(String username) {
+        /**********************************************************/
+        //Between this line would be removed for normal coding
+        // since I dont have much time to create a database this can be used to load some
+        // default test data
+        if(userRepository.findAll().size() == 0) {
+            createDefaultData.createData();
+        }
+        /**********************************************************/
         User user = userRepository.findByUsername(username);
         if(user == null) {
             throw new UsernameNotFoundException(username);
@@ -40,5 +53,8 @@ public class MyUserDetailsService_Impl implements MyUserDetailsService {
         }
         return user;
     }
+
+
+
 
 }

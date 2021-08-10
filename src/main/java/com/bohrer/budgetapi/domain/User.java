@@ -14,6 +14,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +27,7 @@ import lombok.Setter;
 public class User {
 
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="id")
     private Long id;
@@ -38,10 +42,12 @@ public class User {
         this.password = password;
     }
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private Account account;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private Set<Budget> budgets;
 

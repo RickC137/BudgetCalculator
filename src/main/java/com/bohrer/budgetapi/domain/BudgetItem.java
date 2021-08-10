@@ -11,6 +11,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,6 +23,7 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 public class BudgetItem {
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long itemId;
 
@@ -27,6 +31,7 @@ public class BudgetItem {
     private int amount; 
     private boolean isIncome;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name="budget_id", nullable = false)
     private Budget budget;
