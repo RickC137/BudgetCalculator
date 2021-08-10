@@ -31,6 +31,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     public UserDetailsService userDetailsService() {
+        //bad do not do for prod
+        // if used in prod password must be secured externally
         UserDetails user = 
                 User.withDefaultPasswordEncoder()
                         .username("user")
