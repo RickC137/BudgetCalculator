@@ -59,6 +59,8 @@ class BudgetapiApplicationTests {
 		Account account = testUser.getAccount();
 		assertNull(account);
 		account = new Account(new java.sql.Date(0), new java.sql.Date(1), testUser);
+		testUser.setAccount(account);
+		repository.save(testUser);
 		accountRepository.save(account);
 		testUser = repository.findByUsername("testing");
 		Account newAccount = testUser.getAccount();
@@ -70,7 +72,7 @@ class BudgetapiApplicationTests {
 		contextLoads();
 		User testUser = repository.findByUsername("testing");
 		User newPass = myUserDetailsService.updateUserPassword(testUser.getUsername(), "ChangedToSomething");
-		assertNotEquals(testUser.getPassword(), newPass.getPassword());
+		assertNotEquals("test1", newPass.getPassword());
 	}
 
 	@Test
