@@ -15,17 +15,19 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-            .authorizeRequests()
-                .antMatchers("/user").permitAll()
-                .anyRequest().authenticated()
-                .and()
-            .formLogin()
-                .loginPage("/")
-                .permitAll()
-                .and()
-            .logout()
-                .permitAll();
+		http
+            .csrf().disable()
+			.authorizeRequests()
+				.antMatchers("/", "/home", "/insecure*").permitAll()
+                .antMatchers("/user*", "/api*").authenticated()
+				.anyRequest().permitAll()
+				.and()
+			.formLogin()
+				//.loginPage("/login")
+				.permitAll()
+				.and()
+			.logout()
+				.permitAll();
     }
 
     @Bean
@@ -39,6 +41,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .password("password")
                         .roles("USER")
                         .build();
-        return new InMemoryUserDetailsManager();
+        return new InMemoryUserDetailsManager(user);
     }
 }

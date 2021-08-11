@@ -1,10 +1,6 @@
 package com.bohrer.budgetapi.service;
 
-import java.sql.Date;
-
-import com.bohrer.budgetapi.domain.Account;
 import com.bohrer.budgetapi.domain.User;
-import com.bohrer.budgetapi.repository.AccountRepository;
 import com.bohrer.budgetapi.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;

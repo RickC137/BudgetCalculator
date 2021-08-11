@@ -1,6 +1,5 @@
 package com.bohrer.budgetapi.domain;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -14,7 +13,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Getter;
@@ -27,7 +25,6 @@ import lombok.Setter;
 public class User {
 
     @Id
-    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="id")
     private Long id;

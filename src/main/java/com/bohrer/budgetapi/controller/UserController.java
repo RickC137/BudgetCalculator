@@ -14,9 +14,11 @@ public class UserController {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
+    // insecure due to no auth
     @GetMapping("/user")
     public User testing(@RequestParam String username) {
         return myUserDetailsService.findByUsername(username);
     }
+
     
 }

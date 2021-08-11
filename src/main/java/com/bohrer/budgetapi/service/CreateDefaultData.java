@@ -18,7 +18,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CreateDefaultData {
-
+    /**
+     * 
+     * This is not proper to set up data but 
+     * since this project is for demos only
+     * then this is fine
+     */
     
     @Autowired
     private UserRepository userRepository;
@@ -32,8 +37,8 @@ public class CreateDefaultData {
 
     public void createData() {
         User user = new User();
-        user.setPassword("testing");
-        user.setUsername("test");
+        user.setPassword("password");
+        user.setUsername("user");
         userRepository.save(user);
         Account account = new Account();
         account.setEndDate(new Date(10));
@@ -60,5 +65,7 @@ public class CreateDefaultData {
         user.setAccount(account);
         user.setBudgets(budgets);
         userRepository.save(user);
+        
     }
+
 }
