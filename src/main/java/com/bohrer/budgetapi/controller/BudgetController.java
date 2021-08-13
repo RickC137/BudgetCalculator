@@ -14,41 +14,45 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/secure")
-public class MoreSecureController {
+@RequestMapping("/api")
+public class BudgetController {
+ 
     @Autowired
     private UserService userService;
 
     @Autowired
     private MyAccountService myAccountService;
-
+ 
     @Autowired
     private BudgetService budgetService;
-
+ 
     @Autowired
     private ItemService itemService;
 
-
-
-
-    @GetMapping("/updateUser")
-    User updateUser(@RequestParam("user") String user, @RequestParam("newPass") String password, @RequestParam("curPass") String curPass) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails currentUser = (UserDetails)auth.getPrincipal();
-        if(currentUser.getUsername().equals(user)) {
-            return userService.updateUserPassword2(user, curPass, password);
-        }
-       return null;//myUserDetailsService.updateUserPassword2(user, password, );
+    @PostMapping("/create/item")
+    public BudgetItem createItem(@RequestBody BudgetItem item) {
+        return itemService.addItem(item);
     }
 
-    @GetMapping("/updateAccount")
-    Account updateAccount(@RequestBody Account account) {
+    @PostMapping("/create/account")
+    public Account createAccount(@RequestBody Account account) {
+        return myAccountService.addAccount(account);
+    }
+
+    @PostMapping("/create/budget")
+    public Budget createBudget(@RequestBody Budget budget) {
+        return budgetService.addBudget(budget);
+    }
+    
+    @PostMapping("/update/account")
+    public Account updateAccount(@RequestBody Account account) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUser = (UserDetails)auth.getPrincipal();
         Account currentAccount = myAccountService.getAccount(account.getAccountId());
@@ -57,9 +61,9 @@ public class MoreSecureController {
         }
         return null;
     }
-
-    @GetMapping("/updateItem")
-    BudgetItem updateItem(@RequestBody BudgetItem item) {
+ 
+    @PostMapping("/update/item")
+    public BudgetItem updateItem(@RequestBody BudgetItem item) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUser = (UserDetails)auth.getPrincipal();
         BudgetItem budgetItem = itemService.getItem(item.getItemId());
@@ -68,9 +72,9 @@ public class MoreSecureController {
         }
         return null;
     }
-
-    @GetMapping("/updateBudget")
-    Budget updateBudget(@RequestBody Budget budget) {
+ 
+    @PostMapping("/update/budget")
+    public Budget updateBudget(@RequestBody Budget budget) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUser = (UserDetails)auth.getPrincipal();
         Budget curBudget = budgetService.getBudgetById(budget.getId());
@@ -79,5 +83,4 @@ public class MoreSecureController {
         }
         return null;
     }
-
 }
