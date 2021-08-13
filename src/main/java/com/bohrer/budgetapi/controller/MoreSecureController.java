@@ -7,7 +7,7 @@ import com.bohrer.budgetapi.domain.User;
 import com.bohrer.budgetapi.service.BudgetService;
 import com.bohrer.budgetapi.service.ItemService;
 import com.bohrer.budgetapi.service.MyAccountService;
-import com.bohrer.budgetapi.service.MyUserDetailsService;
+import com.bohrer.budgetapi.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class MoreSecureController {
     @Autowired
-    private MyUserDetailsService myUserDetailsService;
+    private UserService userService;
 
     @Autowired
     private MyAccountService myAccountService;
@@ -42,7 +42,7 @@ public class MoreSecureController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUser = (UserDetails)auth.getPrincipal();
         if(currentUser.getUsername().equals(user)) {
-            return myUserDetailsService.updateUserPassword2(user, curPass, password);
+            return userService.updateUserPassword2(user, curPass, password);
         }
        return null;//myUserDetailsService.updateUserPassword2(user, password, );
     }

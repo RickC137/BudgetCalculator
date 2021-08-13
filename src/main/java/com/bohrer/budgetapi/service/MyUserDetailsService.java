@@ -1,14 +1,36 @@
 package com.bohrer.budgetapi.service;
 
 import com.bohrer.budgetapi.domain.User;
+import com.bohrer.budgetapi.repository.UserRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
-public interface MyUserDetailsService {
+@Service
+public class MyUserDetailsService  implements UserDetailsService{
 
-    public User findByUsername(String username);
-    public UserDetails loadUserByUsername(String username);
-    // vuln since anyone can update any user
-    public User updateUserPassword(String username, String password);
-    public User updateUserPassword2(String username, String oldPass, String newPass);
+    @Autowired
+    private UserRepository userRepository;
+
+    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+    @Override
+    public UserDetails loadUserByUsername(String username) {
+        User user = userRepository.findByUsername(username);
+        if(user == null) {
+            throw new UsernameNotFoundException(username);
+        }
+        return org.springframework.security.core.userdetails.User.withUsername(user.getUsername()).password(user.getPassword()).authorities("USER").build();
+    }
+
+    public void signUpUser(User user) {
+        final String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
+        user.setPassword(encryptedPassword);
+        final User createdUser = userRepository.save(user);
+    }
+
 }

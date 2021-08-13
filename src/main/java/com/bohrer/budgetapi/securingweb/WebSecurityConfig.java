@@ -1,6 +1,6 @@
 package com.bohrer.budgetapi.securingweb;
 
-import javax.annotation.Resource;
+import com.bohrer.budgetapi.service.MyUserDetailsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -22,7 +21,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http
             .csrf().disable()
 			.authorizeRequests()
-				.antMatchers("/", "/home", "/insecure*").permitAll()
+				.antMatchers("/", "/home", "/insecure*","/user/add").permitAll()
                 .antMatchers("/user*", "/api*").authenticated()
 				.anyRequest().permitAll()
 				.and()
@@ -35,17 +34,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return super.userDetailsService();
-    }
+    private MyUserDetailsService myUserDetailsService;
 
     @Bean
     public DaoAuthenticationProvider authProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setUserDetailsService(myUserDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

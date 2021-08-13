@@ -8,6 +8,7 @@ import com.bohrer.budgetapi.service.BudgetService;
 import com.bohrer.budgetapi.service.ItemService;
 import com.bohrer.budgetapi.service.MyAccountService;
 import com.bohrer.budgetapi.service.MyUserDetailsService;
+import com.bohrer.budgetapi.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/insecure")
 public class InsecureController {
    @Autowired
-   private MyUserDetailsService myUserDetailsService;
+   private UserService userService;
 
    @Autowired
    private MyAccountService myAccountService;
@@ -36,7 +37,7 @@ public class InsecureController {
    
    @GetMapping("/updateUser")
    User updateUser(@RequestParam("user") String user, @RequestParam("newPass") String password) {
-      return myUserDetailsService.updateUserPassword(user, password);
+      return userService.updateUserPassword(user, password);
    }
    
    @GetMapping("/updateAccount")

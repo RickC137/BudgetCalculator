@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Getter;
@@ -32,6 +33,7 @@ public class User {
     @Column(nullable=false, unique = true) 
     private String username;
 
+    @JsonIgnore
     private String password;
 
     public User(String userName, String password) {

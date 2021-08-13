@@ -19,6 +19,7 @@ import com.bohrer.budgetapi.repository.BudgetItemRepository;
 import com.bohrer.budgetapi.repository.BudgetRepository;
 import com.bohrer.budgetapi.repository.UserRepository;
 import com.bohrer.budgetapi.service.MyUserDetailsService;
+import com.bohrer.budgetapi.service.UserService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ class BudgetapiApplicationTests {
 	AccountRepository accountRepository;
 
 	@Autowired
-	MyUserDetailsService myUserDetailsService;
+	UserService userService;
 
 	@Autowired
 	BudgetRepository budgetRepository;
@@ -70,7 +71,7 @@ class BudgetapiApplicationTests {
 	void updateUserPassword() {
 		contextLoads();
 		User testUser = repository.findByUsername("testing");
-		User newPass = myUserDetailsService.updateUserPassword(testUser.getUsername(), "ChangedToSomething");
+		User newPass = userService.updateUserPassword(testUser.getUsername(), "ChangedToSomething");
 		assertNotEquals("test1", newPass.getPassword());
 	}
 
@@ -78,7 +79,7 @@ class BudgetapiApplicationTests {
 	void updateUserPassword2() {
 		contextLoads();
 		User test = repository.findByUsername("testing");
-		User newPass = myUserDetailsService.updateUserPassword2(test.getUsername(), "test1", "changedIt");
+		User newPass = userService.updateUserPassword2(test.getUsername(), "test1", "changedIt");
 		assertNotEquals("test1", newPass.getPassword());
 	}
 
