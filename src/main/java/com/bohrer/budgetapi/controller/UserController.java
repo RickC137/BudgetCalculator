@@ -11,10 +11,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
@@ -24,18 +26,19 @@ public class UserController {
     private MyUserDetailsService myUserDetailsService;
 
     // insecure due to no auth
-    @GetMapping("/user")
+    @GetMapping("")
     public User testing(@RequestParam String username) {
         return userService.findByUsername(username);
     }
 
-    @PostMapping("/user/add")
+    @PostMapping("/create")
     public String createUser(@RequestBody User user) {
+        System.out.println(user.toString());
         myUserDetailsService.signUpUser(user);
         return "User Added";
     }
 
-    @GetMapping("/user/updateUser")
+    @GetMapping("/update")
     User updateUser(@RequestParam("user") String user, @RequestParam("newPass") String password, @RequestParam("curPass") String curPass) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUser = (UserDetails)auth.getPrincipal();
