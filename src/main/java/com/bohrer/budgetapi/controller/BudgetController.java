@@ -8,16 +8,15 @@ import com.bohrer.budgetapi.service.BudgetService;
 import com.bohrer.budgetapi.service.ItemService;
 import com.bohrer.budgetapi.service.MyAccountService;
 import com.bohrer.budgetapi.service.UserService;
+import com.bohrer.budgetapi.service.ValidateOwnerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,35 +24,116 @@ import org.springframework.web.bind.annotation.RestController;
 public class BudgetController {
  
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private MyAccountService myAccountService;
- 
-    @Autowired
     private BudgetService budgetService;
  
     @Autowired
     private ItemService itemService;
+    
+    @Autowired
+    private MyAccountService myAccountService;
+    
+    @Autowired
+    private UserService userService;
 
-    @PostMapping("/create/item")
-    public BudgetItem createItem(@RequestBody BudgetItem item) {
-        return itemService.addItem(item);
+    @Autowired
+    private ValidateOwnerService validateOwnerService;
+
+    /**
+     * Gets
+     */
+
+    @GetMapping("/get/account")
+    public Account getAccount(Authentication auth, Long id) {
+        if(validateOwnerService.ownsAccount(((UserDetails)auth.getPrincipal()).getUsername(), id)) {
+            return myAccountService.getAccount(id);
+        }
+        return null;
     }
 
+    @GetMapping("/get/budget")
+    public Budget getBudget(Authentication auth, Long id) {
+        if(validateOwnerService.ownsBudget(((UserDetails)auth.getPrincipal()).getUsername(), id)) {
+            return budgetService.getBudgetById(id);
+        }
+        return null;
+    }
+    
+    @GetMapping("/get/item")
+    public BudgetItem getItem(Authentication auth, Long id) {
+        if(validateOwnerService.ownsItem(((UserDetails)auth.getPrincipal()).getUsername(), id)) {
+            return itemService.getItem(id);
+        }
+        return null;
+    }
+
+    /**
+     * Deletes
+     */
+
+    @GetMapping("/delete/account")
+    public String deleteAccount(Authentication auth, Long id) {
+        if(validateOwnerService.ownsAccount(((UserDetails)auth.getPrincipal()).getUsername(), id)) {
+            myAccountService.removeAccountById(id);
+            return "Removed Item";
+        }
+        return "Error";
+    }
+
+    @GetMapping("/delete/budget")
+    public String deleteBudget(Authentication auth, Long id) {
+        if(validateOwnerService.ownsBudget(((UserDetails)auth.getPrincipal()).getUsername(), id)) {
+            budgetService.removeBudgetById(id);
+            return "Removed Item";
+        }
+        return "Error";
+    }
+
+    @GetMapping("/delete/item")
+    public String deleteItem(Authentication auth, Long itemId) {
+        if(validateOwnerService.ownsItem(((UserDetails)auth.getPrincipal()).getUsername(), itemId)) {
+            itemService.deleteItemById(itemId);
+            return "Removed Item";
+        }
+        return "Error";
+    }
+
+    /**
+     * Create
+     */
+
     @PostMapping("/create/account")
-    public Account createAccount(@RequestBody Account account) {
+    public Account createAccount(Authentication auth, @RequestBody Account account) {
+        UserDetails currentUser = (UserDetails)auth.getPrincipal();
+        User user = userService.findByUsername(currentUser.getUsername());
+        account.setUser(user);
         return myAccountService.addAccount(account);
     }
 
     @PostMapping("/create/budget")
-    public Budget createBudget(@RequestBody Budget budget) {
+    public Budget createBudget(Authentication auth, @RequestBody Budget budget) {
+        UserDetails currentUser = (UserDetails)auth.getPrincipal();
+        User user = userService.findByUsername(currentUser.getUsername());
+        budget.setUser(user);
         return budgetService.addBudget(budget);
     }
+
+    @PostMapping("/create/item")
+    public BudgetItem createItem(Authentication auth, @RequestBody BudgetItem item, Long budgetId) {
+        UserDetails currentUser = (UserDetails)auth.getPrincipal();
+        if(validateOwnerService.ownsBudget(currentUser.getUsername(), budgetId)) {
+            Budget budget = budgetService.getBudgetById(budgetId);
+            item.setBudget(budget);
+            return itemService.addItem(item);
+        } 
+        return null;
+    }
     
+    /**
+     * Updates
+     */
+
     @PostMapping("/update/account")
-    public Account updateAccount(@RequestBody Account account) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    public Account updateAccount(Authentication auth, @RequestBody Account account) {
         UserDetails currentUser = (UserDetails)auth.getPrincipal();
         Account currentAccount = myAccountService.getAccount(account.getAccountId());
         if(currentUser.getUsername() == currentAccount.getUser().getUsername()) {
@@ -62,9 +142,17 @@ public class BudgetController {
         return null;
     }
  
+    @PostMapping("/update/budget")
+    public Budget updateBudget(Authentication auth, @RequestBody Budget budget) {
+        UserDetails currentUser = (UserDetails)auth.getPrincipal();
+        if(validateOwnerService.ownsBudget(currentUser.getUsername(), budget.getId())) {
+            return budgetService.updateBudget(budget);
+        }
+        return null;
+    }
+
     @PostMapping("/update/item")
-    public BudgetItem updateItem(@RequestBody BudgetItem item) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    public BudgetItem updateItem(Authentication auth, @RequestBody BudgetItem item) {
         UserDetails currentUser = (UserDetails)auth.getPrincipal();
         BudgetItem budgetItem = itemService.getItem(item.getItemId());
         if(currentUser.getUsername() == budgetItem.getBudget().getUser().getUsername()) {
@@ -73,14 +161,4 @@ public class BudgetController {
         return null;
     }
  
-    @PostMapping("/update/budget")
-    public Budget updateBudget(@RequestBody Budget budget) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails currentUser = (UserDetails)auth.getPrincipal();
-        Budget curBudget = budgetService.getBudgetById(budget.getId());
-        if(currentUser.getUsername() == curBudget.getUser().getUsername()) {
-            return budgetService.updateBudget(budget);
-        }
-        return null;
-    }
 }

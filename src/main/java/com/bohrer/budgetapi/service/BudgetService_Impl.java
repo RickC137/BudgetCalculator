@@ -24,6 +24,11 @@ public class BudgetService_Impl implements BudgetService{
 
     @Override
     public Budget updateBudget(Budget budget) {
+        Budget curBudget = budgetRepository.getById(budget.getId());
+
+        if(budget.getUser() != curBudget.getUser()) {
+            return null;
+        }
         return budgetRepository.save(budget);
     }
 

@@ -24,6 +24,10 @@ public class ItemService_Impl implements ItemService{
 
     @Override
     public BudgetItem updateItem(BudgetItem item) {
+        BudgetItem curItem = budgetItemRepository.getById(item.getItemId());
+        if(curItem.getBudget() != item.getBudget()) {
+            return null;
+        }
         return budgetItemRepository.save(item);
         
     }

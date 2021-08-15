@@ -14,6 +14,10 @@ public class MyAccountService_Impl implements MyAccountService {
 
     @Override
     public Account updateAccount(Account account) {
+        Account curAccount = accountRepository.getById(account.getAccountId());
+        if(account.getUser() != curAccount.getUser()) {
+            return null;
+        }
         return accountRepository.save(account);
     }
 
