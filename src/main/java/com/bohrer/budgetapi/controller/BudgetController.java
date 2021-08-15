@@ -142,8 +142,9 @@ public class BudgetController {
     @PostMapping("/update/account")
     public Account updateAccount(Authentication auth, @RequestBody Account account) {
         UserDetails currentUser = (UserDetails)auth.getPrincipal();
-        Account currentAccount = myAccountService.getAccount(account.getAccountId());
-        if(currentUser.getUsername() == currentAccount.getUser().getUsername()) {
+        if(validateOwnerService.ownsAccount(currentUser.getUsername(), account.getAccountId())) {
+            Account currentAccount = myAccountService.getAccount(account.getAccountId());
+            account.setUser(currentAccount.getUser());
             return myAccountService.updateAccount(account);
         }
         return null;
@@ -153,6 +154,8 @@ public class BudgetController {
     public Budget updateBudget(Authentication auth, @RequestBody Budget budget) {
         UserDetails currentUser = (UserDetails)auth.getPrincipal();
         if(validateOwnerService.ownsBudget(currentUser.getUsername(), budget.getId())) {
+            Budget curBudget = budgetService.getBudgetById(budget.getId());
+            budget.setUser(curBudget.getUser()); // override user if user changed it
             return budgetService.updateBudget(budget);
         }
         return null;
@@ -161,8 +164,9 @@ public class BudgetController {
     @PostMapping("/update/item")
     public BudgetItem updateItem(Authentication auth, @RequestBody BudgetItem item) {
         UserDetails currentUser = (UserDetails)auth.getPrincipal();
-        BudgetItem budgetItem = itemService.getItem(item.getItemId());
-        if(currentUser.getUsername() == budgetItem.getBudget().getUser().getUsername()) {
+        if(validateOwnerService.ownsItem(currentUser.getUsername(), item.getItemId())) {
+            BudgetItem budgetItem = itemService.getItem(item.getItemId()); // override budget if user changed it
+            item.setBudget(budgetItem.getBudget());
             return itemService.updateItem(item);
         }
         return null;
