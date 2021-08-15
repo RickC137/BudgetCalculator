@@ -1,5 +1,6 @@
 package com.bohrer.budgetapi;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -48,6 +49,8 @@ class BudgetapiApplicationTests {
 	void contextLoads() {
 		User user = new User("testing","test1");
 		repository.save(user);
+		User user2 = new User("test2","test1");
+		repository.save(user2);
 		User testUser = repository.findByUsername("testing");
 		assertNotNull(testUser.getUsername());
 	}
@@ -120,6 +123,36 @@ class BudgetapiApplicationTests {
 		Budget budget = budgetRepository.findAll().get(0);
 		assertNotNull(budget);
 		assertNotNull(budget.getItems());
+	}
+
+	@Test
+	void testGetBudgetByUser() {
+		testBudgets();
+		User test = repository.findByUsername("testing");
+		Budget actualBudget = budgetRepository.findAll().get(0);
+		Budget budget = budgetRepository.findByUserId(test.getId());
+		assertNotNull(budget);
+		assertEquals(actualBudget, budget);
+		
+		User test2 = repository.findByUsername("test2");
+		Budget budget2 = budgetRepository.findByUserId(test2.getId());
+		assertNull(budget2);
+		assertNotEquals(actualBudget, budget2);
+	}
+
+	@Test
+	void testGetBudgetByMonthAndYear() {
+		testGetBudgetByUser();
+		User test = repository.findByUsername("testing");
+		Budget budget = budgetRepository.findByUserIdAndMonthAndYear(test.getId(), 1, 2021);
+		Budget actualBudget = budgetRepository.findAll().get(0);
+		assertNotNull(budget);
+		assertEquals(actualBudget, budget);
+
+		Budget budget2 = budgetRepository.findByUserIdAndMonthAndYear(test.getId(), 1, 2022);
+		assertNull(budget2);
+		assertNotEquals(actualBudget, budget2);
+
 	}
 
 }

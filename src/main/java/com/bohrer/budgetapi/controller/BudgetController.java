@@ -66,6 +66,13 @@ public class BudgetController {
         return null;
     }
 
+    @GetMapping("/get/monthly/budget")
+    public Budget getBudgetByMonth(Authentication auth, int monthId, int year) {
+        String username = ((UserDetails)auth.getPrincipal()).getUsername();
+        User user = userService.findByUsername(username);
+        return budgetService.getBudgetByMonthAndYear(user, monthId, year);
+    }
+
     /**
      * Deletes
      */

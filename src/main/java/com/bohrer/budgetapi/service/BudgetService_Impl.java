@@ -1,6 +1,7 @@
 package com.bohrer.budgetapi.service;
 
 import com.bohrer.budgetapi.domain.Budget;
+import com.bohrer.budgetapi.domain.User;
 import com.bohrer.budgetapi.repository.BudgetRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,11 @@ public class BudgetService_Impl implements BudgetService{
     @Override
     public Budget getBudgetById(Long id) {
         return budgetRepository.getById(id);
+    }
+
+    @Override
+    public Budget getBudgetByMonthAndYear(User user, int month, int year) {
+        return budgetRepository.findByUserIdAndMonthAndYear(user.getId(), month, year);
     }
     
 }
