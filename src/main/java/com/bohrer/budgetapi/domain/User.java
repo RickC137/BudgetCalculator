@@ -27,6 +27,9 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 public class User {
 
+    // should use a salt for the password and save it with the user info to the database
+    // this would make it more secure.
+    // Will leave as is for now though maybe add another user model that has this implemented
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="id")
